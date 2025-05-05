@@ -1,0 +1,88 @@
+theory : Theory:
+A distance-vector routing protocol requires that a router informs its neighbours of topology
+changes periodically. Compared to link-state protocols, which require a router to inform all
+the nodes in a network of topology changes, distance-vector routing protocols have less
+computational complexity and message overhead. The term distance vector refers to the fact
+that the protocol manipulates vectors(arrays) of distances to other nodes in the network. The
+vector distance algorithm was the original ARPANET routing algorithm and was also used in
+the internet under the name of RIP.
+Instead, they use two methods:
+1. Direction in which router or exit interface a packet should be forwarded.
+2. Distance from its destination.
+Distance-vector protocols are based on calculating the direction and distance to any link in a
+network. "Direction" usually means the next hop address and the exit interface. "Distance" is
+a measure of the cost to reach a certain node.
+Updates are performed periodically in a distance-vector protocol where all or part of a router's
+routing table is sent to all its neighbours that are configured to use the same distance- vector
+routing protocol. RIP supports cross-platform distance vector routing whereas IGRP is a Cisco
+Systems proprietary distance vector routing protocol. Once a router has this information it is
+able to amend its own routing table to reflect the changes and then inform its neighbours of
+the changes.
+
+code : 
+
+#include <iostream>
+#include <climits>  // For INT_MAX
+using namespace std;
+
+struct DVREntry {
+    int dist[10];  // To hold the distances to all nodes
+    int from[10];  // To store the next hop for each node
+};
+
+int main() {
+    int nodes, i, j, k;
+    
+    cout << "Enter the number of nodes: ";
+    cin >> nodes;
+
+    int costmat[10][10];  // The cost matrix (adjacency matrix)
+    DVREntry DVR[10];     // Array to store the routing table for each router
+
+    // Initialize the cost matrix
+    cout << "Enter the cost matrix (use -1 for no connection): \n";
+    for (i = 0; i < nodes; i++) {
+        for (j = 0; j < nodes; j++) {
+            cin >> costmat[i][j];
+            if (costmat[i][j] == -1 && i != j)
+                costmat[i][j] = INT_MAX;  // No connection, set to INF (INT_MAX)
+        }
+    }
+
+    // Initialize DVR
+    for (i = 0; i < nodes; i++) {
+        for (j = 0; j < nodes; j++) {
+            DVR[i].dist[j] = costmat[i][j];  // Initialize distances from the cost matrix
+            DVR[i].from[j] = j;  // The next hop is initially the destination itself
+        }
+    }
+
+    // Distance Vector Routing Algorithm
+    for (i = 0; i < nodes; i++) {
+        for (j = i + 1; j < nodes; j++) {
+            for (k = 0; k < nodes; k++) {
+                if (DVR[i].dist[j] > costmat[i][k] + DVR[k].dist[j]) {
+                    DVR[i].dist[j] = costmat[i][k] + DVR[k].dist[j];
+                    DVR[j].dist[i] = DVR[i].dist[j];  // Because distance is symmetric
+                    DVR[i].from[j] = k;
+                    DVR[j].from[i] = k;  // Store the next hop for the reverse path as well
+                }
+            }
+        }
+    }
+
+    // Display the routing table for each router
+    for (i = 0; i < nodes; i++) {
+        cout << "\nFor Router " << i + 1 << ":\n";
+        for (j = 0; j < nodes; j++) {
+            if (i != j) {
+                cout << "Node " << j + 1 << " via " << DVR[i].from[j] + 1 
+                     << " Distance " << (DVR[i].dist[j] == INT_MAX ? -1 : DVR[i].dist[j]) << endl;
+            }
+        }
+    }
+
+    return 0;
+}
+outpute : enter no of nodes : 4
+then 1 to 16
