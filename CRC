@@ -1,0 +1,47 @@
+THEORY:RC is a method used to detect errors in digital data (like during data transmission). 
+It works by dividing the data by a fixed generator polynomial, and the remainder is used as a checksum. 
+If the receiver gets a different remainder, it knows there's an error.
+
+
+
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char d[100], k[20], t[200];
+    int i, j, n, len;
+
+    // input data bits and generator polynomial
+    scanf("%s %s", d, k);
+    len = strlen(k);
+
+    // prepare dividend = data + (len-1) zeros
+    strcpy(t, d);
+    for(i = 0; i < len - 1; i++) 
+        t[strlen(d) + i] = '0';
+    t[strlen(d) + len - 1] = '\0';
+
+    n = strlen(t);  // total length of dividend now
+
+    // divide (XOR) by generator
+    for(i = 0; i <= n - len; i++) {
+        if(t[i] == '1') {
+            for(j = 0; j < len; j++) {
+                t[i + j] = ((t[i + j] - '0') ^ (k[j] - '0')) + '0';
+            }
+        }
+    }
+
+    // print original data + CRC (remainder)
+    printf("%s", d);
+    for(i = strlen(d); i < n; i++)
+        printf("%c", t[i]);
+
+    return 0;
+}
+
+
+OUTPUT : Sample Input:
+11010011101100 1011
+Output is original data + CRC.
+11010011101100100
