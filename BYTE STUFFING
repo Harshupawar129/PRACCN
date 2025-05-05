@@ -1,0 +1,51 @@
+THEORY : Byte stuffing refersstuffing with character oriented hardware
+Byte stuffing translates each reserved byte into two unreserved bytes. For example: it can
+use esc as prefix followed by x for soh, y for eot and z for eco.
+The receiver then replaces each occurrence of esc x, esc y and esc z by the
+corresponding single character. This is shown in figure below:
+CODE : 
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char data[100], stuffed[300] = "FLAG";
+    char temp[5];
+    int i = 0;
+
+    printf("Enter data: ");
+    scanf("%s", data);
+
+    while (i < strlen(data)) {
+        if (strncmp(&data[i], "FLAG", 4) == 0) {
+            strcat(stuffed, "ESCFLAG");
+            i += 4;
+        } else if (strncmp(&data[i], "ESC", 3) == 0) {
+            strcat(stuffed, "ESCESC");
+            i += 3;
+        } else {
+            temp[0] = data[i];
+            temp[1] = '\0';
+            strcat(stuffed, temp);
+            i++;
+        }
+    }
+
+    strcat(stuffed, "FLAG");
+    printf("Stuffed: %s\n", stuffed);
+
+    return 0;
+}
+
+OUTPUT:
+Enter data: HELLOESCWORLDFLAGEND
+✅ Output:
+Stuffed: FLAGHELLOESCESCWORLDESCFLAGENDFLAG
+
+ What is Byte Stuffing?
+Byte stuffing is a technique used in data communication protocols to distinguish actual data from control sequences like start (FLAG) or escape (ESC).
+It prevents confusion when these reserved keywords accidentally appear in the data.
+
+⚙️ Reserved Words:
+FLAG: Marks the start and end of a message frame.
+
+ESC: Indicates that the next bytes are part of actual data, not control.
