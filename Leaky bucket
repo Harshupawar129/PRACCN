@@ -1,0 +1,65 @@
+Explanation of Logic:
+Input:
+
+b: Bucket size (maximum capacity).
+
+n: Number of time units (or events) for which packets arrive.
+
+o: Output rate (how many packets can be sent per time unit).
+
+For each time unit:
+
+The program receives in incoming packets and adds them to the current number of packets in the bucket s.
+
+If the number of packets exceeds the bucket's capacity, the excess is dropped (i.e., not stored).
+
+The program then sends packets based on the output rate o, and updates the remaining packets in the bucket.
+
+Output:
+
+For each time unit:
+
+The number of dropped packets is printed if the bucket overflows.
+
+The number of packets sent and the remaining packets in the bucket are also printed.
+
+
+
+CODE : 
+#include <stdio.h>
+
+int main() {
+    int b, n, o, i, in, s = 0;
+    scanf("%d%d%d", &b, &n, &o); // bucket size, time units, output rate
+    for(i = 0; i < n; i++) {
+        scanf("%d", &in); // incoming packets at time i
+        s += in;
+
+        // If the bucket overflows, drop the excess packets
+        if(s > b) {
+            printf("Dropped: %d\n", s - b);
+            s = b; // Set the bucket to full
+        }
+
+        // Determine how much is sent and how much is left
+        int sent = (s < o ? s : o);
+        s -= sent; // Update the remaining packets in the bucket
+        printf("Sent: %d, Left: %d\n", sent, s);
+    }
+
+    return 0;
+}
+OUTPUT:
+10 5 3
+3
+4
+2
+1
+5
+Sent: 3, Left: 0
+Sent: 3, Left: 1
+Sent: 3, Left: 0
+Sent: 1, Left: 0
+Sent: 3, Left: 2
+
+
