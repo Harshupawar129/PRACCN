@@ -2,7 +2,7 @@ THEORY:RC is a method used to detect errors in digital data (like during data tr
 It works by dividing the data by a fixed generator polynomial, and the remainder is used as a checksum. 
 If the receiver gets a different remainder, it knows there's an error.
 
-
+TRANSMITTER
 
 #include <stdio.h>
 #include <string.h>
@@ -45,3 +45,33 @@ OUTPUT : Sample Input:
 11010011101100 1011
 Output is original data + CRC.
 11010011101100100
+
+RECEIVER CODE 
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char f[200], k[20], t[200];
+    int i, j, n, len;
+
+    // input received frame (data + CRC) and generator polynomial
+    scanf("%s %s", f, k);
+    len = strlen(k);
+    strcpy(t, f);
+    n = strlen(f);
+
+    // divide (XOR) by generator
+    for (i = 0; i <= n - len; i++) {
+        if (t[i] == '1') {
+            for (j = 0; j < len; j++) {
+                t[i + j] = ((t[i + j] - '0') ^ (k[j] - '0')) + '0';
+            }
+        }
+    }
+
+    // if any '1' remains in the remainder ⇒ error
+    puts(strchr(t, '1') ? "Error" : "OK");
+
+    return 0;
+}
+
