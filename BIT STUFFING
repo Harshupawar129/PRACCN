@@ -1,0 +1,67 @@
+THEORY : Data link layer is responsible for something called Framing, which is the division of stream 
+of bits from network layer into manageable units (called frames). Frames could be of fixed 
+size or variable size. In variable-size framing, we need a way to define the end of the frame 
+and the beginning of the next frame. 
+ 
+ 
+Bit stuffing is the insertion of non-information bits into data. Note that stuffed bits should 
+not be confused with overhead bits. Overhead bits are non-data bits that are necessary for 
+transmission (usually as part of headers, checksums etc.).
+
+#include <stdio.h>
+
+#include <string.h>
+
+int main()
+
+{
+
+int i=0,count=0;
+
+char databits[80];
+
+printf("Enter Data Bits: ");
+
+scanf("%s",databits);
+
+printf("Data Bits Before Bit Stuffing:%s",databits);
+
+printf("\nData Bits After Bit stuffing :");
+
+for(i=0; i<strlen(databits); i++)
+
+{
+
+if(databits[i]=='1')
+
+count++;
+
+else
+
+count=0;
+
+printf("%c",databits[i]);
+if(count==5)
+
+{
+
+printf("0");
+
+count=0;
+
+}
+
+}
+
+return 0;
+
+}
+---------------------------------------------------------------------------------------------------------------------------------------
+ENETR DATA BTS
+111110
+
+1010101111101
+
+111110111110
+
+00001111
